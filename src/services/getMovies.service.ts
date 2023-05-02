@@ -19,20 +19,29 @@ const getMoviesService = async (
   const count = movies.length;
   let orderObj = {};
 
+  let take: number = Number(perPage) || 5;
+  if (take > 5) {
+    take = 5;
+  } 
+  if (take < 1) {
+    take = 5;
+  }
+  const skip: number = Number(page) || 1;
+
   if (!page && !perPage) {
     movies = await movieRepository.find();
   } else if (page > 0 && !perPage) {
     movies = await movieRepository.find({
-      skip: page,
+      skip: skip,
     });
-  } else if (!page && perPage < 5 && perPage > 0) {
+  } else if (!page && perPage) {
     movies = await movieRepository.find({
-      take: perPage,
+      take: take,
     });
   } else {
     movies = await movieRepository.find({
-      skip: (page - 1) * perPage,
-      take: perPage,
+      skip: (skip - 1) * take,
+      take: take,
     });
   }
 
