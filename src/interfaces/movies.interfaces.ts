@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  movieSchema,
-  movieSchemaRequest,
-} from "../schemas/movies.schemas";
+import { movieSchema, movieSchemaRequest } from "../schemas/movies.schemas";
 import { DeepPartial } from "typeorm";
 
 type TMovie = z.infer<typeof movieSchema>;
@@ -13,4 +10,11 @@ type TMovieResponse = z.infer<typeof movieSchema>;
 
 type TMovieUpdateRequest = DeepPartial<TMovieRequest>;
 
-export { TMovie, TMovieRequest, TMovieResponse, TMovieUpdateRequest };
+type TMoviesPagination = {
+  prevPage: string | null
+  nextPage: string | null
+  count: number
+  data: TMovieResponse[];
+};
+
+export { TMovie, TMovieRequest, TMovieResponse, TMovieUpdateRequest, TMoviesPagination };

@@ -3,6 +3,7 @@ import {
   TMovieRequest,
   TMovieResponse,
   TMovieUpdateRequest,
+  TMoviesPagination,
 } from "../interfaces/movies.interfaces";
 import { createMoviesService } from "../services/createMovies.service";
 import { getMoviesService } from "../services/getMovies.service";
@@ -23,7 +24,17 @@ const getMoviesControllers = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const movies: TMovieResponse[] = await getMoviesService();
+  const sort: string | undefined  = String(req.query.sort);
+  const order: string | undefined  = String(req.query.order);
+  const page: number | undefined = Number(req.query.page);
+  const perPage: number | undefined  = Number(req.query.perPage);
+
+  const movies: TMoviesPagination = await getMoviesService(
+    sort,
+    order,
+    page,
+    perPage
+  );
 
   return res.status(200).json(movies);
 };
