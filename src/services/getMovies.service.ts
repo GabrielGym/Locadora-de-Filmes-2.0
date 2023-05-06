@@ -15,81 +15,71 @@ const getMoviesService = async (
 ): Promise<TMoviesPagination> => {
   const movieRepository: Repository<TMovie> =
     AppDataSource.getRepository(Movie);
-  let movies: TMovieResponse[] | undefined = await movieRepository.find();
-  const count = movies.length;
+  
+  let take: number = parseInt(perPage.toFixed(0)) || 5;  
+  if (take > 5 || take <= 0 || take === null) {
+    take = 5;
+  }
+
+  let skip: number = parseInt(page.toFixed(0));
+  if (skip <= 0 || !page) {
+    skip = 1;
+  }
+  skip = (skip - 1) * take;
+
   let orderObj = {};
-
-  let take: number = Number(perPage) || 5;
-  if (take > 5) {
-    take = 5;
-  } 
-  if (take < 1) {
-    take = 5;
-  }
-  const skip: number = Number(page) || 1;
-
-  if (!page && !perPage) {
-    movies = await movieRepository.find();
-  } else if (page > 0 && !perPage) {
-    movies = await movieRepository.find({
-      skip: skip,
-    });
-  } else if (!page && perPage) {
-    movies = await movieRepository.find({
-      take: take,
-    });
-  } else {
-    movies = await movieRepository.find({
-      skip: (skip - 1) * take,
-      take: take,
-    });
-  }
-
   if (sort === "price") {
     orderObj = {
       price: order,
     };
-    movies = await movieRepository.find({
-      order: orderObj,
-    });
-  }
-  if (sort === "duration") {
+  } else if (sort === "duration") {
     orderObj = {
       duration: order,
     };
-    movies = await movieRepository.find({
-      order: orderObj,
-    });
+  } else {
+    orderObj = {
+      id: "asc",
+    };
   }
+  if(page == 0){
+    page = 1
+  }
+  let prevPage: string | null = `http://localhost:3000/movies?page=${page - 1}&perPage=${take}` || null;
+  let nextPage: string | null = `http://localhost:3000/movies?page=${page + 1}&perPage=${take}` || null;
+
+  const [data, count] = await movieRepository.findAndCount({
+    order: orderObj,
+    skip: skip,
+    take: take,
+  });
 
   if (!page) {
-    return {
-      prevPage: null,
-      nextPage: null,
-      count: count,
-      data: movies,
-    };
+    (prevPage = null), (nextPage = `http://localhost:3000/movies?page=2&perPage=5`);
   } else if (page < 1) {
-    return {
-      prevPage: null,
-      nextPage: `http://localhost:3000/movies/?page=${page + 1}`,
-      count: count,
-      data: movies,
-    };
-  } else if (page >= count) {
-    return {
-      prevPage: `http://localhost:3000/movies/?page=${page - 1}`,
-      nextPage: null,
-      count: count,
-      data: movies,
-    };
+    prevPage = null;
+  } else if (page >= (count / perPage)) {
+    nextPage = null;
   }
+
   return {
-    prevPage: `http://localhost:3000/movies/?page=${page - 1}`,
-    nextPage: `http://localhost:3000/movies/?page=${page + 1}`,
-    count: count,
-    data: movies,
+    prevPage,
+    nextPage,
+    count,
+    data,
   };
 };
+
+/*   await movieRepository.find({
+    take: take,
+    skip: skip,
+    order: orderObj,
+  }); */
+/*   return {
+    prevPage: prevPage,
+    nextPage: nextPage,
+    count: count,
+    data: movies,
+  }; */
+// };
 
 export { getMoviesService };

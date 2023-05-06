@@ -10,6 +10,9 @@ Bora para esse desafio?!
 
 # Regras da entrega
 
+    "test": "cross-env NODE_ENV=test SECRET_KEY=chavesecreta jest --forceExit --runInBand",
+
+
 **A entrega deve seguir as seguintes regras:**
 
 - O código deve estar em **_TypeScript_**, caso não esteja a entrega será zerada;
