@@ -54,8 +54,8 @@ const getMoviesService = async (
   });
 
   if (!page) {
-    (prevPage = null), (nextPage = `http://localhost:3000/movies?page=2&perPage=5`);
-  } else if (page < 1) {
+    (prevPage = null), (nextPage = `http://localhost:3000/movies?page=2&perPage=${take}`);
+  } else if (page <= 1) {
     prevPage = null;
   } else if (page >= (count / perPage)) {
     nextPage = null;
