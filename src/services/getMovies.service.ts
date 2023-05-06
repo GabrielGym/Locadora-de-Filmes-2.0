@@ -1,7 +1,6 @@
 import { Repository } from "typeorm";
 import {
   TMovie,
-  TMovieResponse,
   TMoviesPagination,
 } from "../interfaces/movies.interfaces";
 import { Movie } from "../entities";
@@ -41,7 +40,7 @@ const getMoviesService = async (
       id: "asc",
     };
   }
-  if(page == 0){
+  if(page <= 0){
     page = 1
   }
   let prevPage: string | null = `http://localhost:3000/movies?page=${page - 1}&perPage=${take}` || null;
@@ -68,18 +67,5 @@ const getMoviesService = async (
     data,
   };
 };
-
-/*   await movieRepository.find({
-    take: take,
-    skip: skip,
-    order: orderObj,
-  }); */
-/*   return {
-    prevPage: prevPage,
-    nextPage: nextPage,
-    count: count,
-    data: movies,
-  }; */
-// };
 
 export { getMoviesService };
