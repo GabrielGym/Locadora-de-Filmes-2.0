@@ -1,8 +1,5 @@
 import { Repository } from "typeorm";
-import {
-  TMovie,
-  TMoviesPagination,
-} from "../interfaces/movies.interfaces";
+import { TMovie, TMoviesPagination } from "../interfaces/movies.interfaces";
 import { Movie } from "../entities";
 import { AppDataSource } from "../data-source";
 
@@ -14,8 +11,8 @@ const getMoviesService = async (
 ): Promise<TMoviesPagination> => {
   const movieRepository: Repository<TMovie> =
     AppDataSource.getRepository(Movie);
-  
-  let take: number = parseInt(perPage.toFixed(0)) || 5;  
+
+  let take: number = parseInt(perPage.toFixed(0)) || 5;
   if (take > 5 || take <= 0 || take === null) {
     take = 5;
   }
@@ -40,11 +37,13 @@ const getMoviesService = async (
       id: "asc",
     };
   }
-  if(page <= 0){
-    page = 1
+  if (page <= 0) {
+    page = 1;
   }
-  let prevPage: string | null = `http://localhost:3000/movies?page=${page - 1}&perPage=${take}` || null;
-  let nextPage: string | null = `http://localhost:3000/movies?page=${page + 1}&perPage=${take}` || null;
+  let prevPage: string | null =
+    `http://localhost:3000/movies?page=${page - 1}&perPage=${take}` || null;
+  let nextPage: string | null =
+    `http://localhost:3000/movies?page=${page + 1}&perPage=${take}` || null;
 
   const [data, count] = await movieRepository.findAndCount({
     order: orderObj,
@@ -53,10 +52,11 @@ const getMoviesService = async (
   });
 
   if (!page) {
-    (prevPage = null), (nextPage = `http://localhost:3000/movies?page=2&perPage=${take}`);
+    (prevPage = null),
+      (nextPage = `http://localhost:3000/movies?page=2&perPage=${take}`);
   } else if (page <= 1) {
     prevPage = null;
-  } else if (page >= (count / perPage)) {
+  } else if (page >= count / perPage) {
     nextPage = null;
   }
 
